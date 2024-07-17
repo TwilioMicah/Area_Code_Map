@@ -1,0 +1,41 @@
+
+.cont{
+margin-top: 10px;
+
+}
+.second {
+  position: relative;
+   display:inline-block;
+  margin-top: 5px;
+  top: 80px;
+  left: 2px;
+  width: 45%;
+  border: 2px solid black;
+  margin-top: -60px;
+}
+
+.hello {
+  position: relative;
+  display:inline-block;
+  top: 80px;
+  left: 2px;
+  width: 45%;
+  border: 2px solid black;
+  margin-top: -60px;
+}
+
+button {
+  margin-top: 40px;
+  background-color: #46A8B7; /* Green */
+  border: none;
+  color: white;
+  font-weight:bold;
+  padding: 15px 32px;
+  margin-left: 2px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 10px;
+
+}
