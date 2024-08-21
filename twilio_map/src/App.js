@@ -7,6 +7,8 @@ import PrefixSearch from "./components/prefix_search";
 import Searchdropdown from "./components/search_drop_down"
 import CreateMarker from "./components/createMarker"
 import Twiliologo from "./components/TwilioLogo.png"
+import ResetButton from "./components/reset_button"
+import BlueTwiliologo from "./components/blueLogo.png"
 
 /* TODO:
    - Add ability to search by prefix and city. When searched, it will fly to the location.
@@ -22,21 +24,26 @@ import Twiliologo from "./components/TwilioLogo.png"
    - https://help.twilio.com/articles/223182988
 
    SEARCH:
-   - Example: https://nominatim.openstreetmap.org/search?city=seattle&format=json
+   - Example: https://nominatim.openstreetmap.org/search?city=seattle&format=json&polygon_geojson&country=US
    - Documentation: https://nominatim.org/release-docs/latest/api/Search/
-
+012, Dodge County, Nebraska, United States
   GitToken:
   -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
+
+  --https://turfjs.org/docs/api/booleanOverlap possible solution to finding overlapping shapes
+  --https://geojson.io/#new&map=2/0/20 to edit map features
+  OR
+  https://stackoverflow.com/questions/65158080/powerful-geojson-editor-to-edit-10mb-worth-of-geojson-data
    
 */
 
 function App() {
   const [showModal, setShowModal] = useState(0);
   const [prefixArray, setPrefixArray] = useState([]);
-  const [prefixSearchArray, setPrefixSearchArray] = useState([{ id: 0, name: 'loading' }]);
+  const [prefixSearchArray, setPrefixSearchArray] = useState([{ id: 0, label: 'loading' }]);
   const [searchmarkerCoordinates,setsearchmarkerCoordinates] = useState([])
-
-  
+  const [queryType, setqueryType] = useState("prefix")
+  console.log(prefixSearchArray,"prefixARray")
   const modalShow = (subarray) => {
     setShowModal(prevShowModal => prevShowModal + 1);
     setPrefixArray(subarray);
@@ -48,9 +55,15 @@ function App() {
   };
 
   const coordinatesCallback = (coordinates) => {
-    console.log(coordinates)
+    console.log(coordinates,"coordantesarrayysfksldfknsjkldfnskj")
     setsearchmarkerCoordinates(coordinates);
   };
+
+  const handlesearchType = (searchType) =>{
+    console.log(searchType)
+    setqueryType(searchType)
+
+  }
 
   return (
     <div style={{ height: '100vh' }}>
@@ -61,12 +74,13 @@ function App() {
           top: '0px', 
           left: '0px', 
           width: '100%', // Adjust width as needed
-          backgroundColor: '#0D122B',
+          backgroundColor: '#F5F5F5',
+          border: '1px solid #A9A9A9'
   
         }}>
 
-          <div style = {{left: '0px', width: '100px', position: 'relative', zIndex: 1004}}>
-          <img style={{ width: '100%' }} src={Twiliologo} alt="PIC" 
+          <div style = {{left: '0px', marginTop: '0px', width: '150px', position: 'relative', zIndex: 1004}}>
+          <img style={{ width: '100%' }} src={BlueTwiliologo} alt="PIC" 
           
           
           />
@@ -84,15 +98,20 @@ function App() {
             justifyContent: 'center',
             display: 'flex'
           }}>
-            <div style={{ marginTop: '13px',width: '300px' }}>
-              <PrefixSearch coordinatesCallback = {coordinatesCallback} prefixData={prefixSearchArray} />
+            <div style={{ marginTop: '7px',width: '300px',maxHeight:"50px" }}>
+              <PrefixSearch searchType = {queryType} coordinatesCallback = {coordinatesCallback} prefixData={prefixSearchArray} />
             </div>
             <div style = {{marginRight: '10px'}}>
 
             </div>
-            <div style={{ marginTop: '16px'}}>
-                  <Searchdropdown/>
+            <div style={{backgroundColor:'white',zIndex: 3000,postition: "absolute", marginLeft: "-43px", marginTop: '23px',height:'25px', width:'25px'}}>
+                  <Searchdropdown
+                    handlesearchType = {handlesearchType}
+                  
+                  />
             </div>
+
+
           </div>
         </div>
 
@@ -104,13 +123,16 @@ function App() {
         zoomControl={false}
         minZoom={5}
       >
+                    <div style = {{zIndex:2000,position: 'absolute',right:'25px',marginTop:'25px'}}>
 
+                    <ResetButton/>
+                    </div>
 
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=197c870678314254ae332bcd6f5661d0"
         />
-        <AreaCodeFeatures prefixsearchData={prefixCallback} showModalTrigger={modalShow} />
+        <AreaCodeFeatures tileUpdate = {searchmarkerCoordinates} prefixsearchData={prefixCallback} showModalTrigger={modalShow} />
         <PrefixModal prefixArray={prefixArray} showModal={showModal} />
         <CreateMarker coordinates = {searchmarkerCoordinates}/>
       </MapContainer>
