@@ -4,7 +4,7 @@ import {GeoJSON} from 'react-leaflet';
 import prefixData from './geoData/prefixData'
   
 //layer.resetStyle() to reset style
-const AreaCodeFeatures = React.memo(({prefixsearchData,showModalTrigger,tileUpdate}) => {
+const AreaCodeFeatures = React.memo(({showModalTrigger,tileUpdate}) => {
 
     //let searchArraytmp = []
     let searchDic = {}
@@ -17,7 +17,7 @@ const AreaCodeFeatures = React.memo(({prefixsearchData,showModalTrigger,tileUpda
       layerRef.current?.forEach((layer) => {
     
         const feature = layer.feature;
-        if (feature.properties.NPA == tileUpdate?.label) {
+        if (tileUpdate.includes(feature.properties.NPA)) {
      
           layer.setStyle({
             fillColor: '#f7941d',

@@ -19,7 +19,7 @@ const greenIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-const PrefixSearch = ({ searchType,coordinatesCallback, prefixData }) => {
+const PrefixSearch = ({ searchType,coordinatesCallback,overlayarrayCallback }) => {
 
 const [searchData,setsearchData] = useState([])
 const [loading, setIsLoading] = useState(false);
@@ -29,10 +29,15 @@ const [loading, setIsLoading] = useState(false);
  // const map = useMap();
 
   // Handle item selection
-  const handleSelect = (event,newValue) => {
+  const handleSelect = async (event,newValue) => {
         
         if(newValue){
+        const response = await fetch(`http://localhost:8000/prefixOverlays?prefix=${newValue.label}`);
+        const formattedResponse = await response.json()
+
         coordinatesCallback(newValue)
+        overlayarrayCallback(formattedResponse)
+
         }
   };
 
@@ -45,13 +50,14 @@ const [loading, setIsLoading] = useState(false);
     try {
      
       const response = await fetch(`http://localhost:8000/${searchType}?${searchType}=${data}`);
+      
           
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      
+
       
       const dataResponse = await response.json();
 

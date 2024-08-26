@@ -40,26 +40,30 @@ import BlueTwiliologo from "./components/blueLogo.png"
 function App() {
   const [showModal, setShowModal] = useState(0);
   const [prefixArray, setPrefixArray] = useState([]);
-  const [prefixSearchArray, setPrefixSearchArray] = useState([{ id: 0, label: 'loading' }]);
   const [searchmarkerCoordinates,setsearchmarkerCoordinates] = useState([])
   const [queryType, setqueryType] = useState("prefix")
+  const [searchoverlayArray,setsearchoverlayArray] = useState([])
   const [modalCountry, setmodalCountry] = useState('US');
-  console.log(prefixSearchArray,"prefixARray")
+ 
+  
   const modalShow = (subarray,countryISO) => {
     setShowModal(prevShowModal => prevShowModal + 1);
     setPrefixArray(subarray);
     setmodalCountry(countryISO)
   };
 
-  const prefixCallback = (prefixData) => {
-    console.log(prefixData, "hello");
-    setPrefixSearchArray(prefixData);
-  };
+
 
   const coordinatesCallback = (coordinates) => {
   
     setsearchmarkerCoordinates(coordinates);
   };
+
+  const overlayarrayCallback = (overlayArray) => {
+  
+    setsearchoverlayArray(overlayArray);
+  };
+  
 
   const handlesearchType = (searchType) =>{
     console.log(searchType)
@@ -101,7 +105,7 @@ function App() {
             display: 'flex'
           }}>
             <div style={{ marginTop: '7px',width: '300px',maxHeight:"50px" }}>
-              <PrefixSearch searchType = {queryType} coordinatesCallback = {coordinatesCallback} prefixData={prefixSearchArray} />
+              <PrefixSearch searchType = {queryType} overlayarrayCallback = {overlayarrayCallback} coordinatesCallback = {coordinatesCallback} />
             </div>
             <div style = {{marginRight: '10px'}}>
 
@@ -134,7 +138,7 @@ function App() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=197c870678314254ae332bcd6f5661d0"
         />
-        <AreaCodeFeatures tileUpdate = {searchmarkerCoordinates} prefixsearchData={prefixCallback} showModalTrigger={modalShow} />
+        <AreaCodeFeatures tileUpdate = {searchoverlayArray} showModalTrigger={modalShow} />
         <PrefixModal prefixArray={prefixArray} countryISO = {modalCountry} showModal={showModal} />
         <CreateMarker coordinates = {searchmarkerCoordinates}/>
       </MapContainer>
