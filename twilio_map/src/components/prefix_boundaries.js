@@ -96,13 +96,23 @@ if(!(npa in searchDic)){
     })
 
     //////
-    layer.on('click', async (e) => { 
+    layer.on('click', async (e) => {
+        let isoCountry 
         const npa = feature.properties.NPA
+        console.log(feature.properties)
+        if(feature.properties.COUNTRY === "CANADA"){
+          isoCountry = "CA"
+        }
+        else{
+          isoCountry = "US"
+        }
+
+        
         const response = await fetch(`http://localhost:8000/prefixOverlays?prefix=${npa}`);
         const formattedResponse = await response.json()
  
        
-        showModalTrigger(formattedResponse)
+        showModalTrigger(formattedResponse,isoCountry)
 
       //console.log(feature.properties.NPA,"hello!");
     });

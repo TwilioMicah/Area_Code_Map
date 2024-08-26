@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import React, { useState, useEffect } from 'react';
 import areaCodesStatus from './geoData/areaCodeStatus';
 
-const PrefixModal = React.memo(({showModal,prefixArray})=> {
+const PrefixModal = React.memo(({showModal,prefixArray,countryISO})=> {
 
     const [modalBoolean,setmodalBoolean]= useState(false)
     const [prefixStatus,setprefixStatus]= useState(Array(prefixArray.length).fill('loading'))
@@ -18,7 +18,7 @@ const PrefixModal = React.memo(({showModal,prefixArray})=> {
 
     async function fetchStatus(prefix) {
       try {
-        const response = await fetch(`http://localhost:8000?prefix=${prefix}`);
+        const response = await fetch(`http://localhost:8000?prefix=${prefix}&isoCountry=${countryISO}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

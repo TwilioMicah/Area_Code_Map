@@ -11,9 +11,9 @@ const port = 8000;
 
 const client = twilio('ACe199dcf9929ded3083523cbd3872fd8f', 'ee5d18d3e3b92e15ffdff23efa7a6bf3');
 
-async function listAvailablePhoneNumberLocal(areaCode) {
+async function listAvailablePhoneNumberLocal(areaCode,countryISO) {
     //need to pass iso country to this function so that it can also search for CA numbers
-  const locals = await client.availablePhoneNumbers("US").local.list({
+  const locals = await client.availablePhoneNumbers(countryISO).local.list({
     areaCode: areaCode,
     limit: 20
   });
@@ -26,9 +26,11 @@ async function listAvailablePhoneNumberLocal(areaCode) {
 app.use(cors());
 
 app.get('/', async(req, res) => {
+  console.log(req.query)
+  const isoCountry = req.query.isoCountry
   const areaCode = parseInt(req.query.prefix, 10);
   //console.log(areaCode)
-  const prefix_count = await listAvailablePhoneNumberLocal(areaCode)
+  const prefix_count = await listAvailablePhoneNumberLocal(areaCode,isoCountry)
   
   //console.log(prefix_count,"prefixcount")
   res.send(String(prefix_count));
@@ -98,7 +100,7 @@ app.get('/street', async (req, res) => {
 app.get('/prefix', async (req, res) => {
 
 
-
+    
     
     try {
       var matchingPrefixes = []

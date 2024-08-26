@@ -43,10 +43,12 @@ function App() {
   const [prefixSearchArray, setPrefixSearchArray] = useState([{ id: 0, label: 'loading' }]);
   const [searchmarkerCoordinates,setsearchmarkerCoordinates] = useState([])
   const [queryType, setqueryType] = useState("prefix")
+  const [modalCountry, setmodalCountry] = useState('US');
   console.log(prefixSearchArray,"prefixARray")
-  const modalShow = (subarray) => {
+  const modalShow = (subarray,countryISO) => {
     setShowModal(prevShowModal => prevShowModal + 1);
     setPrefixArray(subarray);
+    setmodalCountry(countryISO)
   };
 
   const prefixCallback = (prefixData) => {
@@ -133,7 +135,7 @@ function App() {
           url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=197c870678314254ae332bcd6f5661d0"
         />
         <AreaCodeFeatures tileUpdate = {searchmarkerCoordinates} prefixsearchData={prefixCallback} showModalTrigger={modalShow} />
-        <PrefixModal prefixArray={prefixArray} showModal={showModal} />
+        <PrefixModal prefixArray={prefixArray} countryISO = {modalCountry} showModal={showModal} />
         <CreateMarker coordinates = {searchmarkerCoordinates}/>
       </MapContainer>
     </div>
