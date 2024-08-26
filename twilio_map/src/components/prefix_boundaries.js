@@ -6,10 +6,10 @@ import prefixData from './geoData/prefixData'
 //layer.resetStyle() to reset style
 const AreaCodeFeatures = React.memo(({prefixsearchData,showModalTrigger,tileUpdate}) => {
 
-    let searchArraytmp = []
+    //let searchArraytmp = []
+    let searchDic = {}
 
     const layerRef = useRef([]);
-    const seenEntries = new Set();
 
 
     useEffect(() => {
@@ -42,7 +42,7 @@ const AreaCodeFeatures = React.memo(({prefixsearchData,showModalTrigger,tileUpda
       });
     }, [tileUpdate]);
 
-const onEachFeature = (feature, layer) => {
+const onEachFeature = async (feature, layer) => {
   
 
   
@@ -62,41 +62,17 @@ const onEachFeature = (feature, layer) => {
     layer.on('add', () => {
         let center = layer.getCenter()
         const npa = feature.properties.NPA
-        let tmpArray = []
+   
 
-//this is not really being used in code currently. I have saved this data to prefixObject.js and am using that currently
-if(searchArraytmp.length<456){ 
- 
-for (let subarray of prefixData) {
-  if (subarray.includes(Number(npa))) {
 
-    for (let item of subarray){
-      //console.log(item)
-        if (!seenEntries.has(String(item))){
-        tmpArray.push({ id: String(item),"center": center, "label": String(item) })
-        seenEntries.add(String(item))
-        }
-      }
-  }
+
+//creates object
+if(!(npa in searchDic)){
+  searchDic[npa] = { id: npa,"center": center, "label": npa }
+
 }
-        if (tmpArray.length>0){
-            searchArraytmp.push(...tmpArray)
-        }
-       if (tmpArray.length === 0){
-        if (!seenEntries.has(npa)){
-                searchArraytmp.push({id: npa,"center": center, "label":npa})
-                seenEntries.add(npa)
-        }
-       }
-       
-       console.log(searchArraytmp.length,"prefixarrayCount Must equal 434")
-       //console.log(searchArraytmp)
-       if(searchArraytmp.length==434){
-        
-        
-        prefixsearchData(searchArraytmp)
-       }
-      }
+
+
 
     });
     ////Styling for hover of a tile
@@ -120,26 +96,14 @@ for (let subarray of prefixData) {
     })
 
     //////
-    layer.on('click', (e) => {  
+    layer.on('click', async (e) => { 
         const npa = feature.properties.NPA
-       
+        const response = await fetch(`http://localhost:8000/prefixOverlays?prefix=${npa}`);
+        const formattedResponse = await response.json()
  
-        let tmpArray
-        prefixData.forEach(subarray => {
-            if (subarray.includes(Number(npa))) {
-                
-                tmpArray = subarray
-            }
+       
+        showModalTrigger(formattedResponse)
 
-      
-          });
-  
-       if (tmpArray?.length>0){
-        showModalTrigger(tmpArray)
-       }
-       else{
-        showModalTrigger([npa])
-       }
       //console.log(feature.properties.NPA,"hello!");
     });
   };

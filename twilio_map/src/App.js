@@ -55,7 +55,7 @@ function App() {
   };
 
   const coordinatesCallback = (coordinates) => {
-    console.log(coordinates,"coordantesarrayysfksldfknsjkldfnskj")
+  
     setsearchmarkerCoordinates(coordinates);
   };
 

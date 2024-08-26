@@ -2,6 +2,7 @@ import React, { useState, useEffect,useCallback } from 'react';
 import L from 'leaflet';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import prefixLocationData from './geoData/prefixObject.mjs'
 import '@mui/material/styles';
 
 
@@ -36,27 +37,35 @@ const [loading, setIsLoading] = useState(false);
   };
 
   const fetchData = async (data) => {
-    console.log(searchType,"fetchdata")
+
     setIsLoading(true);
     
 
     
     try {
+     
       const response = await fetch(`http://localhost:8000/${searchType}?${searchType}=${data}`);
-      console.log(response)
+          
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      
       
       const dataResponse = await response.json();
+
+
       if (searchType === "prefix"){
+
+
 
         const formattedResponse = dataResponse.map((item, index) => ({
           id: index, // Ensure unique id
           label: item.label,
           center: [item.center.lat, item.center.lng],
         }));
-        console.log(formattedResponse.label,'formattedResponse')
+    
         setsearchData(formattedResponse);
 
       }
@@ -71,7 +80,7 @@ const [loading, setIsLoading] = useState(false);
     }
       //
     } catch (error) {
-      console.error('Error fetching city data:', error);
+      console.log('Error fetching city data:', error);
       setsearchData([]); // Reset searchData on error
     } finally {
       setIsLoading(false);
