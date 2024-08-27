@@ -17,7 +17,8 @@ const AreaCodeFeatures = React.memo(({showModalTrigger,tileUpdate}) => {
       layerRef.current?.forEach((layer) => {
     
         const feature = layer.feature;
-        if (tileUpdate.includes(feature.properties.NPA)) {
+
+        if (tileUpdate?.includes(feature.properties.NPA)) {
      
           layer.setStyle({
             fillColor: '#f7941d',

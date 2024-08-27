@@ -23,21 +23,21 @@ const PrefixSearch = ({ searchType,coordinatesCallback,overlayarrayCallback }) =
 
 const [searchData,setsearchData] = useState([])
 const [loading, setIsLoading] = useState(false);
-//console.log(searchType,"PrefixSearch")
-//console.log(searchData)
-  // Get the map instance
- // const map = useMap();
+
 
   // Handle item selection
   const handleSelect = async (event,newValue) => {
         
-        if(newValue){
+        if(newValue && searchType=='prefix'){
         const response = await fetch(`http://localhost:8000/prefixOverlays?prefix=${newValue.label}`);
         const formattedResponse = await response.json()
 
         coordinatesCallback(newValue)
         overlayarrayCallback(formattedResponse)
 
+        }
+        else{
+          coordinatesCallback(newValue)
         }
   };
 

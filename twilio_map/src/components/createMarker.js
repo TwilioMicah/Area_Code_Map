@@ -20,12 +20,12 @@ const CreateMarker = ({ coordinates }) => {
 
       // Add a marker to the map
       if (marker !== 0){
-      console.log(marker,"markercheck")
+  
       marker.remove()
       setMarker(L.marker(coordinates.center, { icon: greenIcon }).addTo(map))
       }
       else{
-        console.log(marker,"markercheck2")
+ 
         setMarker(L.marker(coordinates.center, { icon: greenIcon }).addTo(map))
       }
       //L.marker(coordinates.center, { icon: greenIcon }).addTo(map);
