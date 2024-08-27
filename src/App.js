@@ -44,6 +44,7 @@ function App() {
     ]);
     const [searchmarkerCoordinates, setsearchmarkerCoordinates] = useState([]);
     const [queryType, setqueryType] = useState('prefix');
+
     console.log(prefixSearchArray, 'prefixARray');
     const modalShow = (subarray) => {
         setShowModal((prevShowModal) => prevShowModal + 1);
