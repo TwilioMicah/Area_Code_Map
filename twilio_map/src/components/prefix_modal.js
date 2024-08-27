@@ -3,14 +3,33 @@ import {Modal,Card} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import React, { useState, useEffect } from 'react';
 import areaCodesStatus from './geoData/areaCodeStatus';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 const PrefixModal = React.memo(({showModal,prefixArray,countryISO})=> {
 
     const [modalBoolean,setmodalBoolean]= useState(false)
     const [prefixStatus,setprefixStatus]= useState(Array(prefixArray.length).fill('loading'))
-  
+    
+    const renderTooltip = (props,item) => {
+      if(item =="AVAILABLE"){
+        return(
+      <Tooltip id="button-tooltip" {...props}>
+        This number should be generally available in Twilio inventory
+      </Tooltip>)}
 
-
+      if(item =="UNAVAILABLE"){
+        return(
+      <Tooltip id="button-tooltip" {...props}>
+        This number should not be generally available in Twilio inventory
+      </Tooltip>)}
+      
+      if(item =="EXHAUSTED"){
+        return(
+      <Tooltip id="button-tooltip" {...props}>
+        We are unable to get more of this number 
+      </Tooltip>)}
+ };
     const handleClose = () =>{
         setmodalBoolean(false)
 
@@ -86,31 +105,51 @@ const PrefixModal = React.memo(({showModal,prefixArray,countryISO})=> {
       
   
       (
-          
+   
           <div style = {{marginTop:"10px",borderBottom: "1px solid lightgrey" }}>
           <Card.Title style = {{marginBottom: '10px'}}>
 
             {item}
    
-    
           </Card.Title>
           <Card.Text style={{marginBottom: '5px', fontStyle: "italic", color: "lightgrey"}}>
               <div style = {{display: 'flex'}}>
-              {console.log(prefixStatus[index])}
+    
               {prefixStatus[index]==="20+"?
-              (<Button size="sm" variant="outline-success">{prefixStatus[index]}</Button>):
+              (<Button onClick={() => window.open(`https://console.twilio.com/us1/develop/phone-numbers/manage/search?currentFrameUrl=%2Fconsole%2Fphone-numbers%2Fsearch%3FisoCountry%3D${countryISO}%26searchTerm%3D${item}%26searchFilter%3Dleft%26searchType%3Dnumber%26x-target-region%3Dus1%26__override_layout__%3Dembed%26bifrost%3Dtrue`, "_blank")} size="sm" variant="outline-success">{prefixStatus[index]}</Button>):
               prefixStatus[index]<20 && prefixStatus[index]>0?
-              (<Button size="sm" variant="outline-danger">{prefixStatus[index]}</Button>):
-              (<Button size="sm" variant="outline-secondary">{prefixStatus[index]}</Button>)
+              (<Button onClick={() => window.open(`https://console.twilio.com/us1/develop/phone-numbers/manage/search?currentFrameUrl=%2Fconsole%2Fphone-numbers%2Fsearch%3FisoCountry%3D${countryISO}%26searchTerm%3D${item}%26searchFilter%3Dleft%26searchType%3Dnumber%26x-target-region%3Dus1%26__override_layout__%3Dembed%26bifrost%3Dtrue`, "_blank")} size="sm" variant="outline-danger">{prefixStatus[index]}</Button>):
+              (<Button onClick={() => window.open(`https://console.twilio.com/us1/develop/phone-numbers/manage/search?currentFrameUrl=%2Fconsole%2Fphone-numbers%2Fsearch%3FisoCountry%3D${countryISO}%26searchTerm%3D${item}%26searchFilter%3Dleft%26searchType%3Dnumber%26x-target-region%3Dus1%26__override_layout__%3Dembed%26bifrost%3Dtrue`, "_blank")} size="sm" variant="outline-secondary">{prefixStatus[index]}</Button>)
               
               }
               <div style = {{marginLeft: '10px'}}> </div>
               {areaCodesStatus[item] === 'EXHAUSTED'?
-              <Button size="sm"  variant="secondary">EXAUSTED</Button>:
+                  <OverlayTrigger
+                  placement="right"
+                  delay={{ show: 250, hide: 400 }}
+                  overlay={(props) => renderTooltip(props, areaCodesStatus[item])}
+                >
+
+              <Button size="sm"  variant="secondary">EXAUSTED</Button>
+              </OverlayTrigger>:
+              
               areaCodesStatus[item] === 'AVAILABLE'?
-              <Button size="sm"  variant="success">AVAILABLE</Button>:
+              <OverlayTrigger
+              placement="right"
+              delay={{ show: 250, hide: 400 }}
+              overlay={(props) => renderTooltip(props, areaCodesStatus[item])}
+            >
+              <Button size="sm"  variant="success">AVAILABLE</Button>
+              </OverlayTrigger>:
+
               areaCodesStatus[item] === 'UNAVAILABLE'?
-              <Button size="sm"  variant="danger">UNAVAILABLE</Button>:
+              <OverlayTrigger
+              placement="right"
+              delay={{ show: 250, hide: 400 }}
+              overlay={(props) => renderTooltip(props, areaCodesStatus[item])}
+            >
+              <Button size="sm"  variant="danger">UNAVAILABLE</Button>
+              </OverlayTrigger>:
               null
               }
               </div>

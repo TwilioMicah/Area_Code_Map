@@ -1,10 +1,8 @@
 import React, { useRef,useState, useEffect } from 'react';
 import geojsonData from './geoData/Area__Code__Boundaries.json';
 import {GeoJSON} from 'react-leaflet';
-import prefixData from './geoData/prefixData'
-  
 //layer.resetStyle() to reset style
-const AreaCodeFeatures = React.memo(({showModalTrigger,tileUpdate}) => {
+const AreaCodeFeatures = React.memo(({showModalTrigger,tileUpdate,coordinates}) => {
 
     //let searchArraytmp = []
     let searchDic = {}
@@ -14,11 +12,27 @@ const AreaCodeFeatures = React.memo(({showModalTrigger,tileUpdate}) => {
 
     useEffect(() => {
       // Update styles for all layers when selectedPrefix changes
+
       layerRef.current?.forEach((layer) => {
-    
+        /*
+        var polygonTile = layer.feature.geometry.coordinates
+        if(coordinates?.center){
+          console.log(coordinates.center,polygonTile,"hellooooo")
+          // Convert `coordinates.center` to a GeoJSON point
+          const centerPoint = turf.point(coordinates.center);
+          console.log(polygonTile)
+          // Convert `polygonTile` to a GeoJSON polygon
+          const polygon = turf.polygon([polygonTile]);
+          //console.log(polygon)
+  // Check if the point is inside the polygon
+          if (turf.booleanPointInPolygon(centerPoint, polygon)) {
+            console.log(coordinates.center);
+          }
+      }
+      */
         const feature = layer.feature;
 
-        if (tileUpdate?.includes(feature.properties.NPA)) {
+        if (tileUpdate?.includes(feature.properties.NPA )) {
      
           layer.setStyle({
             fillColor: '#f7941d',

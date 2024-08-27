@@ -138,9 +138,9 @@ function App() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=197c870678314254ae332bcd6f5661d0"
         />
-        <AreaCodeFeatures tileUpdate = {searchoverlayArray} showModalTrigger={modalShow} />
+        <AreaCodeFeatures tileUpdate = {searchoverlayArray} coordinates = {searchmarkerCoordinates} showModalTrigger={modalShow} />
         <PrefixModal prefixArray={prefixArray} countryISO = {modalCountry} showModal={showModal} />
-        <CreateMarker coordinates = {searchmarkerCoordinates}/>
+        <CreateMarker queryType = {queryType} coordinates = {searchmarkerCoordinates}/>
       </MapContainer>
     </div>
   );

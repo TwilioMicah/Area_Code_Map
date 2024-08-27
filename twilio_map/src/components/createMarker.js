@@ -2,12 +2,13 @@ import React, { useState,useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 
-const CreateMarker = ({ coordinates }) => {
+const CreateMarker = ({ coordinates,queryType }) => {
 
   const map = useMap();
   const [marker,setMarker] = useState(0)
   //let marker;
   useEffect(() => {
+    //console.log(queryType,"hellsfsdf")
     if (map && coordinates && coordinates.center) {
       const greenIcon = L.icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
@@ -17,17 +18,21 @@ const CreateMarker = ({ coordinates }) => {
         popupAnchor: [1, -34],
         shadowSize: [41, 41],
       });
-
+      if(marker !== 0){
+        marker.remove()
+      }
       // Add a marker to the map
-      if (marker !== 0){
-  
-      marker.remove()
-      setMarker(L.marker(coordinates.center, { icon: greenIcon }).addTo(map))
-      }
-      else{
+      if(queryType !== 'prefix'){
+
+   
  
-        setMarker(L.marker(coordinates.center, { icon: greenIcon }).addTo(map))
-      }
+        setMarker(
+          L.marker(coordinates.center, { icon: greenIcon })
+            .addTo(map)
+            .bindPopup(coordinates.label)
+        );
+
+    }
       //L.marker(coordinates.center, { icon: greenIcon }).addTo(map);
       
       // Optionally, you can center the map on the new marker
