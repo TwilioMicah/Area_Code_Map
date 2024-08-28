@@ -7,7 +7,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 const PrefixModal = React.memo(({showModal,prefixArray,countryISO})=> {
-
+    console.log(prefixArray,"prefixarray")
     const [modalBoolean,setmodalBoolean]= useState(false)
     const [prefixStatus,setprefixStatus]= useState(Array(prefixArray.length).fill('loading'))
     
