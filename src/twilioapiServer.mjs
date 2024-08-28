@@ -7,6 +7,9 @@ import twilio from 'twilio';
 import xml2js from "xml2js";
 
 
+
+
+
 const app = express();
 const port = 8000;
 
@@ -24,6 +27,30 @@ async function listAvailablePhoneNumberLocal(areaCode,countryISO) {
   return locals.length
 }
 
+//These are functions to handle issues with the localcallingguide api responses
+function handle_835_610_845_prefix(prefix,endpoint){
+/*The overlay array contains 484,610,845
+*/
+}
+
+function handle_206_prefix(prefix,endpoint){
+/*
+When 206 is searched, return 206 which is its noa, not 206,360,564 which are the overlays
+*/
+}
+
+function handle_334_prefix(prefix,endpoint){
+  /*
+  When 334 is searched, have it return 334 which is its npa, not 423/729 which is its overlays
+  */
+  }
+
+function handle_564_360_prefix(prefix,endpoint){
+
+  /*
+  When 564, or 360 are searched return 564 and 360, not 564,360, and 206
+  */
+}
 
 app.use(cors());
 
@@ -127,7 +154,7 @@ app.get('/prefix', async (req, res) => {
               //splitting on '/' ';' ' '
               
               const overlayArray = data.overlay[0].split(/[/; ]+/);
-              console.log(overlayArray)
+              console.log(overlayArray,"data")
      
               for(let item of overlayArray){
                   console.log(item)
@@ -149,7 +176,7 @@ app.get('/prefix', async (req, res) => {
                
               }
             }
-            console.log(matchingPrefixes)
+            console.log(matchingPrefixes,"matchingprefies")
             res.json(matchingPrefixes)
           }
         });
@@ -189,7 +216,7 @@ app.get('/prefixOverlays', async (req, res) => {
             //splitting on '/' ';' ' '
             
             const overlayArray = data.overlay[0].split(/[/; ]+/);
-            console.log(overlayArray)
+            console.log(overlayArray,"data2 s")
             res.json(overlayArray)
    
           
@@ -208,6 +235,8 @@ app.get('/prefixOverlays', async (req, res) => {
     return res.status(500).json({ error: "Unexpected Error" });
   }
 });
+
+
 
 // Start the server
 app.listen(port, () => {

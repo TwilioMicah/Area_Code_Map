@@ -2,9 +2,12 @@ import React, { useRef, useState, useEffect } from 'react';
 import geojsonData from './geoData/coords.json';
 import { GeoJSON } from 'react-leaflet';
 //layer.resetStyle() to reset style
+
+
+
 const AreaCodeFeatures = React.memo(
     ({ showModalTrigger, tileUpdate, coordinates }) => {
-        console.log(tileUpdate,"micahsdhshsh")
+        //console.log(tileUpdate,"micahsdhshsh")
         let searchDic = {};
 
         const layerRef = useRef([]);
@@ -30,7 +33,7 @@ const AreaCodeFeatures = React.memo(
       }
       */
                 const feature = layer.feature;
-                console.log(feature.properties.NPA)
+                console.log(tileUpdate?.includes(feature.properties.NPA?.toString()))
 
                 if (tileUpdate?.includes(feature.properties.NPA?.toString())) {
                     layer.setStyle({
