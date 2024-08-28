@@ -28,28 +28,71 @@ async function listAvailablePhoneNumberLocal(areaCode,countryISO) {
 }
 
 //These are functions to handle issues with the localcallingguide api responses
-function handle_835_610_845_prefix(prefix,endpoint){
+function handle_835_610_484_prefix(){
 /*The overlay array contains 484,610,845
 */
+    return ['835','610','484']
 }
 
-function handle_206_prefix(prefix,endpoint){
+function handle_206_prefix(){
 /*
 When 206 is searched, return 206 which is its noa, not 206,360,564 which are the overlays
 */
+    return ['206']
 }
 
-function handle_334_prefix(prefix,endpoint){
+function handle_334_prefix(){
   /*
   When 334 is searched, have it return 334 which is its npa, not 423/729 which is its overlays
   */
+    return ['334']
   }
 
-function handle_564_360_prefix(prefix,endpoint){
+function handle_564_360_prefix(){
 
   /*
   When 564, or 360 are searched return 564 and 360, not 564,360, and 206
   */
+ return['564','360']
+}
+
+function prefix_delagator(prefix, endpoint) {
+  switch (prefix) {
+    case '835':
+    case '610':
+    case '484':
+      return handle_835_610_484_prefix();
+      
+
+    case '206':
+      return handle_206_prefix();
+      
+
+    case '334':
+      return handle_334_prefix();
+      
+
+    case '564':
+    case '360':
+      return handle_564_360_prefix();
+      
+
+    default:
+      console.log(`No handler found for prefix: ${prefix}`);
+  }
+}
+
+function prefix_check(prefix){
+
+  const validPrefixes = ['564', '360', '334', '206', '835', '610', '484'];
+
+  if (validPrefixes.includes(prefix)) {
+      return true;
+  }
+  else{
+    return false;
+  }
+  
 }
 
 app.use(cors());
@@ -134,7 +177,7 @@ app.get('/prefix', async (req, res) => {
     try {
       var matchingPrefixes = []
       const prefix = req.query.prefix;
-    
+
       const url = `https://localcallingguide.com/xmllistnpa.php?npa=${prefix}`;
 
       ///
@@ -150,34 +193,54 @@ app.get('/prefix', async (req, res) => {
             return res.status(500).json({ error: "Failed to parse XML data." });
           } else {
             var data = result.root.npadata[0]
-            if (data.overlay[0].length>0){
-              //splitting on '/' ';' ' '
-              
-              const overlayArray = data.overlay[0].split(/[/; ]+/);
-              console.log(overlayArray,"data")
-     
-              for(let item of overlayArray){
-                  console.log(item)
-                  if(item in prefixData){
-                    matchingPrefixes.push(  {
-                        id: prefix,
-                        center: prefixData[item].center,
-                        label:prefix,
-                      })
-                      break;
+
+            if(!prefix_check(prefix)){
+
+                if (data.overlay[0].length>0){
+                  //splitting on '/' ';' ' '
+                  
+                  const overlayArray = data.overlay[0].split(/[/; ]+/);
+                  console.log(overlayArray,"data")
+        
+                  for(let item of overlayArray){
+                      console.log(item)
+                      if(item in prefixData){
+                        matchingPrefixes.push(  {
+                            id: prefix,
+                            center: prefixData[item].center,
+                            label:prefix,
+                          })
+                          break;
+                      }
                   }
+                }
+                else{
+                  if(data.npa[0] in prefixData){
+                    matchingPrefixes.push({id: prefix,
+                        center: prefixData[data.npa[0]].center,
+                        label: prefix})
+                  
+                  }
+                }
+                console.log(matchingPrefixes,"matchingprefies")
+                res.json(matchingPrefixes)
               }
+          else{
+              const overlayArray = prefix_delagator(prefix,'prefix')
+              console.log(overlayArray)
+              for(let item of overlayArray){
+                console.log(item)
+                if(item in prefixData){
+                  matchingPrefixes.push(  {
+                      id: prefix,
+                      center: prefixData[item].center,
+                      label:prefix,
+                    })
+                    break;
+                }
             }
-            else{
-              if(data.npa[0] in prefixData){
-                matchingPrefixes.push({id: prefix,
-                    center: prefixData[data.npa[0]].center,
-                    label: prefix})
-               
-              }
-            }
-            console.log(matchingPrefixes,"matchingprefies")
             res.json(matchingPrefixes)
+          }
           }
         });
       } else {
@@ -211,6 +274,8 @@ app.get('/prefixOverlays', async (req, res) => {
         if (err) {
           return res.status(500).json({ error: "Failed to parse XML data." });
         } else {
+
+          if(!prefix_check(prefix)){
           var data = result.root.npadata[0]
           if (data.overlay[0].length>0){
             //splitting on '/' ';' ' '
@@ -227,6 +292,12 @@ app.get('/prefixOverlays', async (req, res) => {
           }
 
         }
+      
+        else{
+          const overlayArray = prefix_delagator(prefix,'prefix')
+          res.json(overlayArray)
+        }
+      }
       });
     } else {
       return res.status(500).json({ error: "Failed to fetch XML data." });
