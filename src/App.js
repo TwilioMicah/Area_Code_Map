@@ -75,7 +75,7 @@ function App() {
                     left: '0px',
                     width: '100%', // Adjust width as needed
                     backgroundColor: '#F5F5F5',
-                    border: '3px solid #1F304C',
+                    border: '1.5px solid #1F304C',
                 }}
             >
                 <div
@@ -159,8 +159,7 @@ function App() {
 
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://api.mapbox.com/styles/v1/sfry006/cm0fvxbb501i901qvfz6dao4c/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic2ZyeTAwNiIsImEiOiJjbTBmbHJ6anAwd3IzMmtweDUydGo3Mm5sIn0.Ne6e2ppxpoWRfat8o4jVAA
-                    "
+                    url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=197c870678314254ae332bcd6f5661d0"
                 />
                 <AreaCodeFeatures
                     tileUpdate={searchoverlayArray}
