@@ -75,7 +75,7 @@ function App() {
                     left: '0px',
                     width: '100%', // Adjust width as needed
                     backgroundColor: '#F5F5F5',
-                    border: '1px solid #A9A9A9',
+                    border: '3px solid #1F304C',
                 }}
             >
                 <div
