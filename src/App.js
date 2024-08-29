@@ -141,6 +141,7 @@ function App() {
                 center={[39.5, -98.35]}
                 zoom={5}
                 scrollWheelZoom={true}
+                loadingControl={true}
                 style={{ height: '100vh', width: '100%' }}
                 zoomControl={false}
                 minZoom={5}
@@ -158,7 +159,8 @@ function App() {
 
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=197c870678314254ae332bcd6f5661d0"
+                    url="https://api.mapbox.com/styles/v1/sfry006/cm0fvxbb501i901qvfz6dao4c/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic2ZyeTAwNiIsImEiOiJjbTBmbHJ6anAwd3IzMmtweDUydGo3Mm5sIn0.Ne6e2ppxpoWRfat8o4jVAA
+                    "
                 />
                 <AreaCodeFeatures
                     tileUpdate={searchoverlayArray}
