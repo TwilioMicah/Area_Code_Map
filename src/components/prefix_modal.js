@@ -52,11 +52,11 @@ const PrefixModal = React.memo(({showModal,prefixArray,countryISO})=> {
   </Tooltip>)}
 };
 
-const renderTooltipStockLevel = (props) => {
+const renderTooltipStatic = (props,message) => {
  
     return(
   <Tooltip id="button-tooltip" {...props}>
-    Current Twilio inventory stock level.
+    {message}
   </Tooltip>)
 };
 
@@ -118,14 +118,17 @@ const renderTooltipStockLevel = (props) => {
   }, [prefixArray]);
 
 
-const labelStyle = {
-
-  padding: '0.25rem 0.5rem', // smaller padding to look like a label
-  borderRadius: '0.25rem', // rounded corners for label effect
-  fontSize: '0.75rem', // smaller font size
-  textAlign: 'center', // center text
-  display: 'inline-block' // make it inline like a label
-}
+  const labelStyle = {
+    padding: '0.25rem 0.5rem', // smaller padding to look like a label
+    borderRadius: '0.25rem', // rounded corners for label effect
+    fontSize: '0.75rem', // smaller font size
+    textAlign: 'center', // center text
+    display: 'inline-block', // make it inline like a label
+    whiteSpace: 'nowrap', // prevent text from wrapping to the next line
+    overflow: 'hidden', // hide any overflowing text
+    textOverflow: 'ellipsis', // add ellipsis (...) for overflowing text
+  };
+  
 
 
     return (
@@ -169,7 +172,7 @@ const labelStyle = {
               <OverlayTrigger
                   placement="right"
                   delay={{ show: 250, hide: 400 }}
-                  overlay={(props) => renderTooltipStockLevel(props)}
+                  overlay={(props) => renderTooltipStatic(props,"Current Twilio inventory stock level.")}
                 >
               {prefixStatus[index]==="20+"?
               (<Button style ={labelStyle} size="sm" variant="outline-success">{prefixStatus[index]}</Button>):
@@ -242,8 +245,20 @@ const labelStyle = {
               </OverlayTrigger>
             ) : null}
 
+                <div style = {{position: 'absolute',right:'20px'}}      
+>
+
+                <OverlayTrigger
+                placement="top"
+                delay={{ show: 250, hide: 400 }}
+                overlay={(props) => renderTooltipStatic(props, "Click button to download all localities for this area code.")}
+              >
+<Button size="sm" variant="outline-dark">Download</Button>
 
 
+               
+              </OverlayTrigger>
+              </div>
 
 
 
