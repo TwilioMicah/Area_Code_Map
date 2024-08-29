@@ -1,29 +1,30 @@
-import json
-import math
+import csv
 
-# Path to your JSON file
-file_path = './src/components/Area__Code__Boundaries.json'
+# Initialize an empty dictionary
+output_dict = {}
 
-# Read the JSON file
-with open(file_path, 'r') as file:
-    data = json.load(file)
-
-# Initialize a set to track unique rounded areas
-location_set = set()
-
-# Iterate through the features in reverse to safely delete items
-for i in range(len(data['features']) - 1, -1, -1):
-    feature = data['features'][i]
-    #shape_area = float(feature['properties']['SHAPE__Area'])
-    #rounded_area = math.floor(shape_area)
-    #print(data['features'][i]['properties']['NPA'])
-    print(i)
-    if data['features'][i]['properties']['NPA'] in location_set:
-        print(data['features'][i]['properties']['NPA'])
+# Open and read the CSV file using the relative path
+with open('./src/statusData.csv', newline='') as csvfile:
+    # Use the csv.reader to parse the comma-separated file
+    csv_reader = csv.reader(csvfile, delimiter=',')
+    
+    # Process each row in the CSV
+    for row in csv_reader:
+        # Skip rows that don't have exactly 3 columns
+        if len(row) != 3:
+            continue
         
-    else:
-        location_set.add(data['features'][i]['properties']['NPA'])
+        # Extract area code, status, and turnover
+        area_code, status, turnover = row
+        
+        # Extract the first three digits of the area code
+        prefix = area_code[1:]
+        
+        # Create a dictionary entry
+        output_dict[prefix] = {
+            'status': status.capitalize(),
+            'turnover': turnover.capitalize()
+        }
 
-# Save the changes back to the JSON file without pretty-printing
-#with open(file_path, 'w') as file:
- #   json.dump(data, file, separators=(',', ':'), ensure_ascii=False)
+# Print the resulting dictionary
+print(output_dict)
