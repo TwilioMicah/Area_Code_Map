@@ -118,7 +118,14 @@ const renderTooltipStockLevel = (props) => {
   }, [prefixArray]);
 
 
+const labelStyle = {
 
+  padding: '0.25rem 0.5rem', // smaller padding to look like a label
+  borderRadius: '0.25rem', // rounded corners for label effect
+  fontSize: '0.75rem', // smaller font size
+  textAlign: 'center', // center text
+  display: 'inline-block' // make it inline like a label
+}
 
 
     return (
@@ -165,52 +172,75 @@ const renderTooltipStockLevel = (props) => {
                   overlay={(props) => renderTooltipStockLevel(props)}
                 >
               {prefixStatus[index]==="20+"?
-              (<Button size="sm" variant="outline-success">{prefixStatus[index]}</Button>):
+              (<Button style ={labelStyle} size="sm" variant="outline-success">{prefixStatus[index]}</Button>):
               prefixStatus[index]<20 && prefixStatus[index]>0?
-              (<Button size="sm" variant="outline-danger">{prefixStatus[index]}</Button>):
-              (<Button size="sm" variant="outline-secondary">{prefixStatus[index]}</Button>)
+              (<Button style ={labelStyle} size="sm" variant="outline-danger">{prefixStatus[index]}</Button>):
+              (<Button style ={labelStyle} size="sm" variant="outline-secondary">{prefixStatus[index]}</Button>)
               
               }
               </OverlayTrigger>
               
               <div style = {{marginLeft: '10px'}}> </div>
-              {areaCodesStatus[item]?.status?
-                  <OverlayTrigger
-                  placement="right"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={(props) => renderTooltipStatus(props, areaCodesStatus[item].status)}
-                >
-
-              <Button size="sm"  variant=
-              
-              
-              {areaCodesStatus[item]?.status ==='Exhausted'? "secondary":areaCodesStatus[item]?.status ==='Available'?"success":'danger'}
-            
-            
-            >{areaCodesStatus[item]?.status}</Button>
-              </OverlayTrigger>:
-              null
-              }
+                      {areaCodesStatus[item]?.status ? (
+          <OverlayTrigger
+            placement="right"
+            delay={{ show: 250, hide: 400 }}
+            overlay={(props) => renderTooltipStatus(props, areaCodesStatus[item].status)}
+          >
+            <Button
+              size="sm"
+              style={{
+                backgroundColor:
+                  areaCodesStatus[item]?.status === 'Exhausted'
+                    ? '#6c757d'  // muted gray for 'secondary'
+                    : areaCodesStatus[item]?.status === 'Available'
+                    ? '#28a745'  // muted green for 'success'
+                    : '#dc3545', // muted red for 'danger'
+                borderColor:
+                  areaCodesStatus[item]?.status === 'Exhausted'
+                    ? '#6c757d'
+                    : areaCodesStatus[item]?.status === 'Available'
+                    ? '#28a745'
+                    : '#dc3545',
+                color: '#ffffff', // text color
+                ...labelStyle
+              }}
+            >
+              {areaCodesStatus[item]?.status}
+            </Button>
+          </OverlayTrigger>
+        ) : null}
 
 
               <div style = {{marginLeft: '10px'}}> </div>
-              {areaCodesStatus[item]?.turnover?
-                  <OverlayTrigger
-                  placement="right"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={(props) => renderTooltipTurnover(props, areaCodesStatus[item].turnover)}
+                          {areaCodesStatus[item]?.turnover ? (
+              <OverlayTrigger
+                placement="right"
+                delay={{ show: 250, hide: 400 }}
+                overlay={(props) => renderTooltipTurnover(props, areaCodesStatus[item].turnover)}
+              >
+                <Button
+                  size="sm"
+                  style={{
+                    backgroundColor:
+                      areaCodesStatus[item]?.turnover === 'Low'
+                        ? '#007bff'  // muted blue for 'primary'
+                        : areaCodesStatus[item]?.turnover === 'Medium'
+                        ? '#ffc107'  // muted yellow for 'warning'
+                        : '#dc3545', // muted red for 'danger'
+                    borderColor:
+                      areaCodesStatus[item]?.turnover === 'Low'
+                        ? '#007bff'
+                        : areaCodesStatus[item]?.turnover === 'Medium'
+                        ? '#ffc107'
+                        : '#dc3545',
+                        ...labelStyle
+                  }}
                 >
-
-              <Button size="sm"  variant=
-              
-              
-              {areaCodesStatus[item]?.turnover ==='Low'? "primary":areaCodesStatus[item]?.turnover ==='Medium'?"warning":'danger'}
-            
-            
-            >{areaCodesStatus[item]?.turnover+" "+"turnover"}</Button>
-              </OverlayTrigger>:
-              null
-              }
+                  {areaCodesStatus[item]?.turnover + ' turnover'}
+                </Button>
+              </OverlayTrigger>
+            ) : null}
 
 
 
