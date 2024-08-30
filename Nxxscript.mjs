@@ -54,6 +54,7 @@ async function listAvailablePhoneNumberLocal() {
       const locals = await client.availablePhoneNumbers("US").local.list({
         inLata: item.lata,
         inRateCenter: item.rc,
+        areaCode: '971',
         limit: 1,
       });
       

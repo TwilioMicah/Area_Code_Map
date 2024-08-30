@@ -6,10 +6,12 @@ import areaCodesStatus from './geoData/areaCodeStatus';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-const PrefixModal = React.memo(({showModal,prefixArray,countryISO})=> {
+
+const PrefixModal = React.memo(({showModal,prefixArray,countryISO,markerDataNPACallBack})=> {
     console.log(prefixArray,"prefixarray")
     const [modalBoolean,setmodalBoolean]= useState(false)
     const [prefixStatus,setprefixStatus]= useState(Array(prefixArray.length).fill('loading'))
+    const [isLoading,setisLoading] = useState(false)
     
     const renderTooltipStatus = (props,item) => {
       if(item =="Available"){
@@ -62,7 +64,9 @@ const renderTooltipStatic = (props,message) => {
 
 
     const handleClose = () =>{
+        if (!isLoading){
         setmodalBoolean(false)
+        }
 
     }
 
@@ -128,6 +132,65 @@ const renderTooltipStatic = (props,message) => {
     overflow: 'hidden', // hide any overflowing text
     textOverflow: 'ellipsis', // add ellipsis (...) for overflowing text
   };
+
+
+  const handleDisplayClick = async (prefix, countryISO) => {
+    var markerArray = [];
+    const batchSize = 25;
+    const delay = 1000; // 1 second
+    
+    // Helper function to introduce a delay
+    const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    
+    try {
+      console.log(prefix, countryISO, "Fetching rate centers...");
+      
+      // Fetch the data from the rateCenters API
+      const response = await fetch(`http://localhost:8000/rateCenters?prefix=${prefix}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      // Parse the JSON response
+      const rateCenters = await response.json();
+      
+      setisLoading(true)
+      
+      for (let i = 0; i < rateCenters.length; i += batchSize) {
+        // Create a batch of promises
+        const batch = rateCenters.slice(i, i + batchSize).map(async (item) => {
+          const queryString = JSON.stringify(item);
+          const encodedQueryString = encodeURIComponent(queryString);
+          try {
+            const response = await fetch(`http://localhost:8000/npaLocalities?prefix=${prefix}&country=${countryISO}&rateCenter=${encodedQueryString}`);
+            if (response.ok) {
+              const data = await response.json();
+            
+              markerArray.push(data);
+            } 
+          } catch (error) {
+          
+          }
+        });
+        
+        // Wait for the current batch to complete
+        await Promise.all(batch);
+        
+        // Pause after every batch
+        if (i + batchSize < rateCenters.length) {
+          await timeout(delay);
+        }
+      }
+      markerDataNPACallBack(markerArray)
+      setisLoading(false)
+      handleClose()
+      
+    } catch (error) {
+      console.error('Error in handleDisplayClick:', error);
+    }
+  };
+  
+  
   
 
 
@@ -136,7 +199,7 @@ const renderTooltipStatic = (props,message) => {
        
       <div>
         
-      <Modal show={modalBoolean} onHide={handleClose}>
+      <Modal backdrop={isLoading?"static":true} show={modalBoolean} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Available Prefixes</Modal.Title>
       </Modal.Header>
@@ -149,19 +212,8 @@ const renderTooltipStatic = (props,message) => {
    
           <div style = {{marginTop:"10px",borderBottom: "1px solid lightgrey" }}>
 <Card.Title 
-  
   style={{ 
     marginBottom: '10px', 
-    cursor: 'pointer',
-    transition: 'color 0.3s ease',
-  }}
-  onMouseEnter={(e) => {
-    e.target.style.color = '#007bff'; 
-    e.target.style.textDecoration = 'underline'; 
-  }}
-  onMouseLeave={(e) => {
-    e.target.style.color = ''; 
-    e.target.style.textDecoration = ''; 
   }}
 >
   {item}
@@ -253,7 +305,7 @@ const renderTooltipStatic = (props,message) => {
                 delay={{ show: 250, hide: 400 }}
                 overlay={(props) => renderTooltipStatic(props, "Click button to map all localities for this area code.")}
               >
-<Button size="sm" variant="outline-dark">Display</Button>
+<Button disabled ={isLoading?true:false} onClick = {() => handleDisplayClick(item,countryISO)} size="sm" variant="outline-dark">{isLoading?"Loading...":"Display"}</Button>
 
 
                

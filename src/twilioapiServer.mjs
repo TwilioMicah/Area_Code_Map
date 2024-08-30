@@ -13,6 +13,97 @@ const client = twilio(
     'ee5d18d3e3b92e15ffdff23efa7a6bf3'
 );
 
+async function ListNumberforRateCenter(prefix, country, rateCenter) {
+  
+  try {
+    if (!prefix || !country || !rateCenter) {
+      throw new Error('Prefix, country, and rateCenter parameters are required.');
+    }
+
+    if (!rateCenter.lata || !rateCenter.rc) {
+      throw new Error('Rate center must include both LATA and RC values.');
+    }
+
+    //console.log(rateCenter);
+
+    const rawTwilioData = await client.availablePhoneNumbers(country).local.list({
+      inLata: rateCenter.lata,
+      inRateCenter: rateCenter.rc,
+      areaCode: prefix,
+      limit: 1,
+    });
+
+    if (rawTwilioData.length === 0) {
+      throw new Error('No available phone numbers found for the given criteria.');
+    }
+
+    //console.log(rawTwilioData);
+
+    const twilioResponse = rawTwilioData[0];
+    if (!twilioResponse || !twilioResponse.friendlyName) {
+      throw new Error('Invalid Twilio response.');
+    }
+
+    const NPA_NXX = twilioResponse.friendlyName.slice(0, -4) + 'xxxx';
+
+    const latitude = twilioResponse.latitude ?? rateCenter.lat;
+    const longitude = twilioResponse.longitude ?? rateCenter.lng;
+    console.log(twilioResponse.locality)
+    return { npa_nxx: NPA_NXX, center: [latitude, longitude],locality: twilioResponse.locality };
+
+  } catch (error) {
+    console.error('Error:', error.message || error);
+    return null; // or return an appropriate fallback value
+  }
+}
+
+async function fetchAndParseXML(prefix) {
+  try {
+    const response = await fetch(`https://localcallingguide.com/xmlrc.php?npa=${prefix}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.text();
+
+    // Check if the XML response is not empty
+    if (!data || data.trim() === '') {
+      throw new Error('Received empty XML data');
+    }
+
+    // Parse the XML data with a Promise
+    const parser = new xml2js.Parser();
+    const result = await parser.parseStringPromise(data);
+
+    // Extract the relevant information
+    const rateCenters = [];
+    const rcDataList = result.rcdata || result.root?.rcdata; // Adjust based on XML structure
+
+    if (!rcDataList || !Array.isArray(rcDataList)) {
+      throw new Error('Unexpected XML structure: rcdata is missing or not an array');
+    }
+
+    rcDataList.forEach((rcData) => {
+      const rc = rcData.rcshort?.[0];
+      const lata = rcData.lata?.[0];
+      const lat = rcData['rc-lat']?.[0];
+      const lng = rcData['rc-lon']?.[0];
+
+      if (rc && lata && lat && lng) {
+        rateCenters.push({ rc, lata, lat, lng });
+      } else {
+        console.warn('Incomplete data for a rate center:', rcData);
+      }
+    });
+
+    return rateCenters;
+
+  } catch (error) {
+    console.error('Error:', error.message || error);
+    return [];
+  }}
+
 async function listAvailablePhoneNumberLocal(areaCode, countryISO) {
     //need to pass iso country to this function so that it can also search for CA numbers
     const locals = await client.availablePhoneNumbers(countryISO).local.list({
@@ -286,6 +377,64 @@ app.get('/prefixOverlays', async (req, res) => {
         return res.status(500).json({ error: 'Unexpected Error' });
     }
 });
+
+
+
+app.get('/rateCenters', async (req, res) => {
+  console.log(req.query.prefix)
+  try {
+    const prefix = req.query.prefix;
+
+    if (!prefix) {
+      return res.status(400).json({ error: 'Prefix query parameter is required' });
+    }
+
+    const rateCenterData = await fetchAndParseXML(prefix);
+
+    if (rateCenterData.length === 0) {
+      return res.status(404).json({ error: 'No rate center data found or an error occurred' });
+    }
+
+    res.json(rateCenterData);
+
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/npaLocalities', async (req, res) => {
+  
+  try {
+    const prefix = req.query.prefix;
+    const country = req.query.country;
+    const rateCenterString = req.query.rateCenter;
+
+    const decodedRateCenterString = decodeURIComponent(rateCenterString);
+    const rateCenter = JSON.parse(decodedRateCenterString);
+    console.log(rateCenter)
+    // Validate required query parameters
+    if (!prefix || !country || !rateCenter) {
+      return res.status(400).json({ error: 'Prefix, country, and rate center are required.' });
+    }
+
+    // Call the listAvailablePhoneNumberLocal function
+    const pnObject = await ListNumberforRateCenter(prefix, country, rateCenter);
+
+    // Check if the function returned a valid object
+    if (!pnObject) {
+      return res.status(404).json({ error: 'No available phone number found for the given criteria.' });
+    }
+
+    // Send the response
+    res.json(pnObject);
+
+  } catch (error) {
+    // Handle any unexpected errors
+    console.error('Error:', error.message || error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
 
 // Start the server
 app.listen(port, () => {

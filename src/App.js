@@ -45,6 +45,16 @@ function App() {
     const [searchoverlayArray, setsearchoverlayArray] = useState([]);
     const [modalCountry, setmodalCountry] = useState('US');
 
+
+
+    const markerDataNPACallBack = (NPAobj) =>{
+
+        setqueryType('prefix')
+        console.log(NPAobj,"we are in teh obefjlsdfksdhfksdfksdgfhjsdbj")
+        setsearchmarkerCoordinates(NPAobj)
+
+    }
+
     const modalShow = (subarray, countryISO) => {
         setShowModal((prevShowModal) => prevShowModal + 1);
         setPrefixArray(subarray);
@@ -75,7 +85,7 @@ function App() {
                     left: '0px',
                     width: '100%', // Adjust width as needed
                     backgroundColor: '#F5F5F5',
-                    border: '1.5px solid #1F304C',
+                    border: '1px solid #c4c4c4',
                 }}
             >
                 <div
@@ -148,7 +158,7 @@ function App() {
             >
                 <div
                     style={{
-                        zIndex: 2000,
+                        zIndex: 1000,
                         position: 'absolute',
                         right: '25px',
                         marginTop: '25px',
@@ -170,6 +180,7 @@ function App() {
                     prefixArray={prefixArray}
                     countryISO={modalCountry}
                     showModal={showModal}
+                    markerDataNPACallBack = {markerDataNPACallBack}
                 />
                 <CreateMarker
                     queryType={queryType}
