@@ -149,20 +149,11 @@ const renderTooltipStatic = (props,message) => {
    
           <div style = {{marginTop:"10px",borderBottom: "1px solid lightgrey" }}>
 <Card.Title 
-  onClick={() => window.open(`https://console.twilio.com/us1/develop/phone-numbers/manage/search?currentFrameUrl=%2Fconsole%2Fphone-numbers%2Fsearch%3FisoCountry%3D${countryISO}%26searchTerm%3D${item}%26searchFilter%3Dleft%26searchType%3Dnumber%26x-target-region%3Dus1%26__override_layout__%3Dembed%26bifrost%3Dtrue`, "_blank")}
+  
   style={{ 
     marginBottom: '10px', 
-    cursor: 'pointer',
-    transition: 'color 0.3s ease',
   }}
-  onMouseEnter={(e) => {
-    e.target.style.color = '#007bff'; 
-    e.target.style.textDecoration = 'underline'; 
-  }}
-  onMouseLeave={(e) => {
-    e.target.style.color = ''; 
-    e.target.style.textDecoration = ''; 
-  }}
+
 >
   {item}
 </Card.Title>
@@ -251,9 +242,9 @@ const renderTooltipStatic = (props,message) => {
                 <OverlayTrigger
                 placement="top"
                 delay={{ show: 250, hide: 400 }}
-                overlay={(props) => renderTooltipStatic(props, "Click button to download all localities for this area code.")}
+                overlay={(props) => renderTooltipStatic(props, "Click button to buy number in Twilio console")}
               >
-<Button size="sm" variant="outline-dark">Download</Button>
+<Button onClick={() => window.open(`https://console.twilio.com/us1/develop/phone-numbers/manage/search?currentFrameUrl=%2Fconsole%2Fphone-numbers%2Fsearch%3FisoCountry%3D${countryISO}%26searchTerm%3D${item}%26searchFilter%3Dleft%26searchType%3Dnumber%26x-target-region%3Dus1%26__override_layout__%3Dembed%26bifrost%3Dtrue`, "_blank")} size="sm" variant="outline-dark">Buy</Button>
 
 
                
