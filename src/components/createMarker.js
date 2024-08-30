@@ -39,7 +39,7 @@ const CreateMarker = ({ coordinates,queryType }) => {
     iconUrl: phoneIconBase64(dimension),
     iconSize: [dimension, dimension],  // Icon's size
     iconAnchor: [dimension/2 , dimension],  // Adjusted anchor point
-    popupAnchor: [-20, -34],  // Popup's anchor point
+    popupAnchor: [-10, -34],  // Popup's anchor point
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     shadowSize: [dimension+10, dimension]  // Adjusted shadow size
   });
