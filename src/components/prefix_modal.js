@@ -8,10 +8,12 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 
 const PrefixModal = React.memo(({showModal,prefixArray,countryISO,markerDataNPACallBack})=> {
-    console.log(prefixArray,"prefixarray")
+
     const [modalBoolean,setmodalBoolean]= useState(false)
     const [prefixStatus,setprefixStatus]= useState(Array(prefixArray.length).fill('loading'))
     const [isLoading,setisLoading] = useState(false)
+    const [rateCenterObjectLength,setrateCenterObjectLength] = useState(0)
+    const [loadingButtonPrefix,setloadingButtonPrefix] = useState('')
     
     const renderTooltipStatus = (props,item) => {
       if(item =="Available"){
@@ -94,7 +96,6 @@ const renderTooltipStatic = (props,message) => {
       }, [showModal]);
 
 
-     // const fetch = require('node-fetch');
 
   useEffect(() => {
     setprefixStatus(Array(prefixArray.length).fill('loading'))
@@ -104,7 +105,7 @@ const renderTooltipStatic = (props,message) => {
       const results = await Promise.all(
         prefixArray.map(async (prefix) => {
           const status = await fetchStatus(prefix);
-          console.log(status)
+    
           return status == 20 ? '20+' : status;
 
         })
@@ -134,6 +135,7 @@ const renderTooltipStatic = (props,message) => {
   };
 
 
+
   const handleDisplayClick = async (prefix, countryISO) => {
     var markerArray = [];
     const batchSize = 25;
@@ -143,33 +145,44 @@ const renderTooltipStatic = (props,message) => {
     const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     
     try {
-      console.log(prefix, countryISO, "Fetching rate centers...");
+
       
       // Fetch the data from the rateCenters API
       const response = await fetch(`http://localhost:8000/rateCenters?prefix=${prefix}`);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       
       // Parse the JSON response
       const rateCenters = await response.json();
-      
+      setrateCenterObjectLength(rateCenters.length)
+      setloadingButtonPrefix(prefix)
       setisLoading(true)
       
       for (let i = 0; i < rateCenters.length; i += batchSize) {
+        setrateCenterObjectLength(rateCenters.length-i)
         // Create a batch of promises
         const batch = rateCenters.slice(i, i + batchSize).map(async (item) => {
           const queryString = JSON.stringify(item);
           const encodedQueryString = encodeURIComponent(queryString);
           try {
             const response = await fetch(`http://localhost:8000/npaLocalities?prefix=${prefix}&country=${countryISO}&rateCenter=${encodedQueryString}`);
+            
             if (response.ok) {
               const data = await response.json();
-            
+              if(!data.error){
+
+              
+      
               markerArray.push(data);
-            } 
+              }
+            }
+            else{
+              console.error('Fetch error:', response.statusText);
+            }
           } catch (error) {
-          
+            
           }
         });
         
@@ -305,7 +318,11 @@ const renderTooltipStatic = (props,message) => {
                 delay={{ show: 250, hide: 400 }}
                 overlay={(props) => renderTooltipStatic(props, "Click button to map all localities for this area code.")}
               >
-<Button disabled ={isLoading?true:false} onClick = {() => handleDisplayClick(item,countryISO)} size="sm" variant="outline-dark">{isLoading?"Loading...":"Display"}</Button>
+            <Button id={item} 
+            disabled ={isLoading?true:false} 
+            onClick = {() => handleDisplayClick(item,countryISO)} size="sm" variant="outline-dark">
+            {isLoading && (item===loadingButtonPrefix)?`${rateCenterObjectLength} items left`:"Display"}
+            </Button>
 
 
                

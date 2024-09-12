@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import AreaCodeFeatures from './components/prefix_boundaries';
@@ -6,7 +6,7 @@ import PrefixModal from './components/prefix_modal';
 import PrefixSearch from './components/prefix_search';
 import Searchdropdown from './components/search_drop_down';
 import CreateMarker from './components/createMarker';
-import Twiliologo from './components/TwilioLogo.png';
+
 import ResetButton from './components/reset_button';
 import BlueTwiliologo from './components/blueLogo.png';
 
@@ -50,7 +50,6 @@ function App() {
     const markerDataNPACallBack = (NPAobj) =>{
 
         setqueryType('prefix')
-        console.log(NPAobj,"we are in teh obefjlsdfksdhfksdfksdgfhjsdbj")
         setsearchmarkerCoordinates(NPAobj)
 
     }
@@ -70,7 +69,7 @@ function App() {
     };
 
     const handlesearchType = (searchType) => {
-        console.log(searchType);
+
         setqueryType(searchType);
     };
 

@@ -7,7 +7,7 @@ const CreateMarker = ({ coordinates,queryType }) => {
   const map = useMap();
   const [marker,setMarker] = useState(0)
 
-
+  
   const phoneIconSvg = (dimension) => { 
   
       
@@ -73,14 +73,14 @@ const CreateMarker = ({ coordinates,queryType }) => {
    
   //let marker;
   useEffect(() => {
-    //console.log(queryType,"hellsfsdf")
+    
     if (map && coordinates && (coordinates?.center || coordinates[0]?.center)) {
 
       if(marker !== 0){
         marker.remove()
       }
       // Add a marker to the map
-
+      
       if(queryType === 'prefix' && coordinates[0] ){
     
         
@@ -94,9 +94,9 @@ const CreateMarker = ({ coordinates,queryType }) => {
       else if(queryType !== 'prefix'){
 
    
- 
+
         setMarker(
-          L.marker(coordinates.center, { icon: orangeIcon })
+          L.marker(coordinates?.center, { icon: orangeIcon })
             .addTo(map)
             .bindPopup(coordinates.label)
         );
@@ -105,7 +105,7 @@ const CreateMarker = ({ coordinates,queryType }) => {
     }
 
     if(!coordinates[0] ){
-    map.flyTo(coordinates.center, 7);
+    map.flyTo(coordinates?.center, 7);
     }
       //L.marker(coordinates.center, { icon: greenIcon }).addTo(map);
       
@@ -114,9 +114,7 @@ const CreateMarker = ({ coordinates,queryType }) => {
     } 
     
     
-    else {
-      console.error('Map or coordinates.center is not available');
-    }
+
   }, [coordinates,map]);
 
   return null; // No UI rendering needed

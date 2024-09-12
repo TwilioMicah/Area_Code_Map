@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import L from 'leaflet';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import prefixLocationData from './geoData/prefixObject.mjs';
 import '@mui/material/styles';
 
 //I want the options to appear on buttom click on the search bar. Will toggle menue under the search
@@ -10,7 +8,9 @@ import '@mui/material/styles';
 
 // Define the icon
 
-
+const containsNonDigit = (str) => {
+    return /\D/.test(str);
+};
 const PrefixSearch = ({
     searchType,
     coordinatesCallback,
@@ -21,7 +21,9 @@ const PrefixSearch = ({
 
     // Handle item selection
     const handleSelect = async (event, newValue) => {
-        if (newValue && searchType == 'prefix') {
+        if (newValue && searchType  == 'prefix') {
+          
+                
             const response = await fetch(
                 `http://localhost:8000/prefixOverlays?prefix=${newValue.label}`
             );
@@ -29,6 +31,7 @@ const PrefixSearch = ({
 
             coordinatesCallback(newValue);
             overlayarrayCallback(formattedResponse);
+            
         } else {
             coordinatesCallback(newValue);
         }
@@ -47,8 +50,12 @@ const PrefixSearch = ({
             }
 
             const dataResponse = await response.json();
-
-            if (searchType === 'prefix') {
+      
+            if(dataResponse.length ===0 || (containsNonDigit(data)&& searchType==='prefix' )){
+    
+                setsearchData([]);
+            }
+            else if (searchType === 'prefix') {
                 const formattedResponse = dataResponse.map((item, index) => ({
                     id: index, // Ensure unique id
                     label: item.label,
@@ -67,7 +74,7 @@ const PrefixSearch = ({
             }
             //
         } catch (error) {
-            console.log('Error fetching city data:', error);
+            console.error('Error fetching data:', error);
             setsearchData([]); // Reset searchData on error
         } finally {
             setIsLoading(false);
@@ -141,34 +148,16 @@ const PrefixSearch = ({
                         }}
                     />
                 )}
+                /*
                 PaperProps={{
                     sx: {
                         border: '1px solid rgba(0, 0, 0, 0.12)', // Border around the dropdown
                         backgroundColor: '#fff', // Dropdown background
                     },
-                }}
+                }} */
             />
         </div>
     );
 };
-/*
-    <ReactSearchAutocomplete
 
-      maxResults={5}
-      inputDebounce={500}
-      items={searchData}
-      onSelect={handleSelect}
-      onSearch={fetchData}
-      fuseOptions={{
-        shouldSort: true,
-        threshold: 0.0,
-        location: 0,
-        distance: 0,
-        maxPatternLength: 32,
-        minMatchCharLength: 1,
-        keys: ['name'],
-      }}
-    />
-
-*/
 export default PrefixSearch;

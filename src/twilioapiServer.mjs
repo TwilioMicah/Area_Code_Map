@@ -48,7 +48,7 @@ async function ListNumberforRateCenter(prefix, country, rateCenter) {
 
     const latitude = twilioResponse.latitude ?? rateCenter.lat;
     const longitude = twilioResponse.longitude ?? rateCenter.lng;
-    console.log(twilioResponse.locality)
+    
     return { npa_nxx: NPA_NXX, center: [latitude, longitude],locality: twilioResponse.locality };
 
   } catch (error) {
@@ -178,9 +178,9 @@ function prefix_check(prefix) {
 app.use(cors());
 
 app.get('/', async (req, res) => {
-    console.log(req.query);
+  
     const isoCountry = req.query.isoCountry;
-    console.log(isoCountry);
+ 
     const areaCode = parseInt(req.query.prefix, 10);
     //console.log(areaCode)
     const prefix_count = await listAvailablePhoneNumberLocal(
@@ -214,7 +214,7 @@ app.get('/city', async (req, res) => {
 app.get('/postalcode', async (req, res) => {
     try {
         const postalCode = req.query.postalcode;
-        console.log(postalCode, 'postal');
+  
         const response = await fetch(
             `https://nominatim.openstreetmap.org/search?postalcode=${postalCode}&countrycodes=US,CA&limit=5&format=json`
         );
@@ -232,7 +232,7 @@ app.get('/postalcode', async (req, res) => {
 });
 
 app.get('/street', async (req, res) => {
-    console.log('street');
+  
     try {
         const street = req.query.street;
         const response = await fetch(
@@ -253,13 +253,16 @@ app.get('/street', async (req, res) => {
 
 app.get('/prefix', async (req, res) => {
     try {
+        
         var matchingPrefixes = [];
         const prefix = req.query.prefix;
 
         const url = `https://localcallingguide.com/xmllistnpa.php?npa=${prefix}`;
 
-        ///
+        
         const response = await fetch(url);
+   
+
 
         if (response.ok) {
             const xmlText = await response.text(); // Get the response as text
@@ -267,11 +270,12 @@ app.get('/prefix', async (req, res) => {
             // Parse the XML to JSON using xml2js
 
             xml2js.parseString(xmlText, (err, result) => {
-                if (err) {
+                if (result.root.error) {
+                    
                     return res
-                        .status(500)
-                        .json({ error: 'Failed to parse XML data.' });
+                        .json([]);
                 } else {
+              
                     var data = result.root.npadata[0];
 
                     if (!prefix_check(prefix)) {
@@ -280,10 +284,10 @@ app.get('/prefix', async (req, res) => {
 
                             const overlayArray =
                                 data.overlay[0].split(/[/; ]+/);
-                            console.log(overlayArray, 'data');
+                     
 
                             for (let item of overlayArray) {
-                                console.log(item);
+                           
                                 if (item in prefixData) {
                                     matchingPrefixes.push({
                                         id: prefix,
@@ -302,13 +306,13 @@ app.get('/prefix', async (req, res) => {
                                 });
                             }
                         }
-                        console.log(matchingPrefixes, 'matchingprefies');
+
                         res.json(matchingPrefixes);
                     } else {
                         const overlayArray = prefix_delagator(prefix, 'prefix');
-                        console.log(overlayArray);
+      
                         for (let item of overlayArray) {
-                            console.log(item);
+                   
                             if (item in prefixData) {
                                 matchingPrefixes.push({
                                     id: prefix,
@@ -323,16 +327,18 @@ app.get('/prefix', async (req, res) => {
                 }
             });
         } else {
-            return res.status(500).json({ error: 'Failed to fetch XML data.' });
+          
+            return res.json([]);
         }
     } catch (error) {
-        return res.status(500).json({ error: 'Unexpected Error' });
+    
+        return res.json([]);
     }
 });
 
 app.get('/prefixOverlays', async (req, res) => {
     try {
-        console.log(req.query);
+     
         const prefix = req.query.prefix;
 
         const url = `https://localcallingguide.com/xmllistnpa.php?npa=${prefix}`;
@@ -358,10 +364,10 @@ app.get('/prefixOverlays', async (req, res) => {
 
                             const overlayArray =
                                 data.overlay[0].split(/[/; ]+/);
-                            console.log(overlayArray, 'data2 s');
+                           
                             res.json(overlayArray);
                         } else {
-                            console.log(data.npa[0]);
+                       
                             res.json([data.npa[0]]);
                         }
                     } else {
@@ -381,7 +387,7 @@ app.get('/prefixOverlays', async (req, res) => {
 
 
 app.get('/rateCenters', async (req, res) => {
-  console.log(req.query.prefix)
+
   try {
     const prefix = req.query.prefix;
 
@@ -411,7 +417,7 @@ app.get('/npaLocalities', async (req, res) => {
 
     const decodedRateCenterString = decodeURIComponent(rateCenterString);
     const rateCenter = JSON.parse(decodedRateCenterString);
-    console.log(rateCenter)
+    
     // Validate required query parameters
     if (!prefix || !country || !rateCenter) {
       return res.status(400).json({ error: 'Prefix, country, and rate center are required.' });
@@ -422,7 +428,7 @@ app.get('/npaLocalities', async (req, res) => {
 
     // Check if the function returned a valid object
     if (!pnObject) {
-      return res.status(404).json({ error: 'No available phone number found for the given criteria.' });
+      return res.json({ error: 'No available phone number found for the given criteria.' });
     }
 
     // Send the response
