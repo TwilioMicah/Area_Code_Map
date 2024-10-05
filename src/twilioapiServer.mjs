@@ -9,8 +9,8 @@ const app = express();
 const port = 8000;
 
 const client = twilio(
-    'ACe199dcf9929ded3083523cbd3872fd8f',
-    'ee5d18d3e3b92e15ffdff23efa7a6bf3'
+    'ACCOUNT_SID',
+    'AUTH_TOKEN'
 );
 
 async function ListNumberforRateCenter(prefix, country, rateCenter) {
