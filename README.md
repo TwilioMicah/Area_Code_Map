@@ -13,5 +13,5 @@ Live Demo: https://twilio-prefix-map-na-8377-dev.twil.io/index.html
 
 ## Technologies Used
 - **Frontend**: Bootstrap, React, Leaflet 
-- **Backend**: Node.js, Nominatim API, Local Calling Guide
+- **Backend**: Node.js, Nominatim API, Local Calling Guide, Twilio API
 - **Deployment**: Twilio Serverless Functions
